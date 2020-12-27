@@ -20,7 +20,9 @@ const reservationShema = mongoose.Schema({
     seat_col : {
         type : Number,
         required : true
-    } 
+    }
+},{
+    timestamps : true
 })
 
 reservationShema.index({match : 1, seat_row : 1, seat_col : 1}, {unique : true})
