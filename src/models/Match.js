@@ -30,6 +30,9 @@ const matchSchema = mongoose.Schema({
         type : String,
         required : true
     }
+},{
+    timestamps: true,
+    toJSON: {virtuals: true}
 })
 
 matchSchema.virtual('reservations', {
