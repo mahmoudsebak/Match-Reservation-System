@@ -25,7 +25,23 @@ const userSignin = async (req, res) => {
     }
 }
 
+const userLogout = async (req, res) => {
+    const user = req.user
+    user.tokens = user.tokens.filter( (token) => {
+        if(token.token !== req.token) return true 
+    })
+    console.log(user.tokens)
+    try {
+        await user.save()
+        res.status(200).send()
+    } catch (error) {
+        res.status(500).send()
+    }
+    
+}
+
 module.exports = {
     userSignin,
-    userSignup
+    userSignup,
+    userLogout
 }
