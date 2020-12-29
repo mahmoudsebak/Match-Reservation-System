@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Match = require('./Match')
 
 const stadiumSchema = mongoose.Schema({
     name : {
@@ -20,6 +21,12 @@ stadiumSchema.virtual('matches', {
     ref : 'Match',
     localField : '_id',
     foreignField : 'match_venue' 
+ })
+
+ stadiumSchema.pre('remove', async (next) => {
+     const stadium = this
+     await Match.deleteMany({match_venue : stadium._id})
+     next()
  })
 
 const Stadium = mongoose.model('Stadium', stadiumSchema)
