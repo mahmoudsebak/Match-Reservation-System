@@ -4,6 +4,7 @@ const router = new express.Router()
 const adminController = require('../controllers/adminstrator')
 
 router.post('/adminstrator/signin', adminController.adminSignin)
+router.post('/adminstrator/logout', auth, adminController.adminLogout)
 router.patch('/adminstrator/approve/:id', auth, adminController.adminApprove)
 
 

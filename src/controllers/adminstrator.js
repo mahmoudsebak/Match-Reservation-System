@@ -30,14 +30,31 @@ const adminApprove = async (req, res) => {
     }   
 }
 
+const adminLogout = async (req, res) => {
+    const admin = req.admin
+    admin.token = ""
+    try {
+        await admin.save()
+        res.status(200).send()
+    } catch (error) {
+        res.status(500).send({error:true, message: error.message})
+    }
+}
+
 const forceAdmin = async (req, res) => {
     const admin = new Admin(req.body)
-    await admin.save()
-    res.status(201).send(admin)
+    try{
+        await admin.save()
+        res.status(201).send(admin)
+    } catch(error){
+        res.status(400).send({error : true, message : error.message})
+    }
+    
 }
 
 module.exports = {
     adminSignin,
     adminApprove,
+    adminLogout,
     forceAdmin
 }
