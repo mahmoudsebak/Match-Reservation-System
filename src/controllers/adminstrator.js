@@ -18,9 +18,9 @@ const adminSignin = async (req, res) => {
 }
 
 const adminApprove = async (req, res) => {
-    const user_id = req.params.id
+    const userId = req.params.id
     try {
-        const user = await User.findOneAndUpdate({_id : user_id}, { $set: { approved: true}})
+        const user = await User.findOneAndUpdate({_id : userId}, { $set: { approved: true}})
         if(!user){
             res.status(404).send({error : true, message : "User Not Found!"})
         }
@@ -49,12 +49,26 @@ const forceAdmin = async (req, res) => {
     } catch(error){
         res.status(400).send({error : true, message : error.message})
     }
-    
+}
+
+const deleteUser = async (req, res) => {
+    const userId = req.params.id
+    try {
+        const user = await User.findByIdAndDelete(userId)
+        if(!user){
+            res.status(404).send({error : true, message : "User Not Found!"})
+        }
+        res.status(200).send({error : false, user : user})    
+    } catch (error) {
+        res.status(500).send({error:true, message:error.message})
+    }
+     
 }
 
 module.exports = {
     adminSignin,
     adminApprove,
     adminLogout,
+    deleteUser,
     forceAdmin
 }
