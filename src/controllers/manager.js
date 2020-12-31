@@ -5,6 +5,8 @@ const Reservation = require('../models/Reservation.js')
 
 const addMatch =  async (req, res) => {
     try {
+        if (!req.user.role)
+            throw new Error('User does not have manager credentials');
         const match = new Match(req.body);
         await match.save();
         res.status(201).json({match : match}); 
@@ -29,6 +31,8 @@ const getMatch = async (req, res) => {
 
 const editMatch = async (req, res) => {
     try {
+        if (!req.user.role)
+            throw new Error('User does not have manager credentials');
         const match = await Match.findById(req.params.id);
         if (!match)
             throw new Error('No match was found with this id');
@@ -42,6 +46,8 @@ const editMatch = async (req, res) => {
 
 const addStadium = async (req, res) => {
     try {
+        if (!req.user.role)
+            throw new Error('User does not have manager credentials');
         const stadium = new Stadium(req.body);
         await stadium.save();
         res.status(201).json({stadium : stadium}); 
