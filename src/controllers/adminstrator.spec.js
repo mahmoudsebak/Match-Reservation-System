@@ -1,5 +1,16 @@
+const app = require('../app');
+const supertest = require('supertest');
+const request = supertest(app);
+
+jest.setTimeout(20000);
+
 describe('Admin', ()=> {
-    it('Sign in', ()=> {
-        expect(1).toBe(1);
+    it('Signin() ', async ()=> {
+        await request.post('/adminstrator/signin')
+        .send({
+            email: "filo@yahoo.com",
+            password: "1234"
+        }).expect(400);
     });  
+
 });
