@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "env-cmd -f ./config/dev.env nodemon src/index.js -e js,json",
-    "test": "jest --colors --coverage"
+    "test": "env-cmd -f ./config/dev.env jest --colors --coverage"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +24,7 @@
   "devDependencies": {
     "env-cmd": "^10.1.0",
     "jest": "^26.6.3",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "supertest": "^6.0.1"
   }
 }
