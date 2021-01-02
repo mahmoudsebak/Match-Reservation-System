@@ -3,7 +3,6 @@ const supertest = require('supertest');
 const request = supertest(app);
 const Admin = require('../models/Adminstrator.js');
 const User = require('../models/User.js');
-const user = require('./user');
 const mongoose = require('mongoose')
 
 describe('Admin', ()=> {
