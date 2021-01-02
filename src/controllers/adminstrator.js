@@ -13,7 +13,7 @@ const adminSignin = async (req, res) => {
         const token = await admin.generateToken()
         res.status(200).send({error : false, token : token, admin : admin})
     } catch (error) {
-        res.status(400).send({error : true, message : error.message})
+        res.status(404).send({error : true, message : error.message})
     }
 }
 

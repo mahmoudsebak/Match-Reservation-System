@@ -13,7 +13,7 @@ const auth = async (req, res, next) => {
         req.token = token
         next()
     } catch(e){
-        res.status(401).send('Not Authorized!')
+        res.status(401).send({error:true, message:'Not Authorized!'})
     }
 }
 

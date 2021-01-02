@@ -5,10 +5,10 @@ const auth = require('../middleware/user_auth')
 
 router.post('/manager/match', auth, managerController.addMatch);
 router
-  .route('/manager/match/:id')
+  .route('/manager/match/:matchID')
   .get(managerController.getMatch)
   .patch(auth, managerController.editMatch);
 router.post('/manager/stadium', auth, managerController.addStadium);
-router.get('/manager/seats/:matchid', managerController.getSeats);
+router.get('/manager/seats/:matchID', managerController.getSeats);
 
 module.exports = router
