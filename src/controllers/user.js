@@ -5,7 +5,11 @@ const Reservation = require('../models/Reservation.js')
 
 const userSignup =  async (req, res) => {
     try {
-        const user = new User(req.body)
+        const user_ = { ...req.body }
+        if(req.body.approved){
+            user_.approved = false
+        }
+        const user = new User(user_)
         await user.save()
         res.status(201).send({user : user, error : false})
     } catch (error) {
@@ -21,7 +25,7 @@ const userSignin = async (req, res) => {
         const token = await user.generateToken()
         res.status(200).send({error : false, token : token, user : user})
     } catch (error) {
-        res.status(400).send({error : true, message : error.message})
+        res.status(404).send({error : true, message : error.message})
     }
 }
 
@@ -30,7 +34,6 @@ const userLogout = async (req, res) => {
     user.tokens = user.tokens.filter( (token) => {
         if(token.token !== req.token) return true 
     })
-    console.log(user.tokens)
     try {
         await user.save()
         res.status(200).send()
