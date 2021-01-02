@@ -10,7 +10,7 @@ describe('Admin', ()=> {
         .send({
             email: "filo@yahoo.com",
             password: "1234"
-        }).expect(400);
+        }).expect(404);
     });  
 
 });
