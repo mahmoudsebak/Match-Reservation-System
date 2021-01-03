@@ -13,10 +13,10 @@ const addMatch =  async (req, res) => {
         
         const stadium = await Stadium.findById(match.match_venue)
         
-        const normalCol=stadium.seats_per_row
+        const normalCol = stadium.seats_per_row
         const vipCol = stadium.VIP_area_seats_per_row
-        const normalRow=stadium.normal_area_rows
-        const vipRow=stadium.VIP_area_rows
+        const normalRow = stadium.normal_area_rows
+        const vipRow = stadium.VIP_area_rows
         
         const normalSeats =
         Array.from({ length: normalRow }, () => 
@@ -27,13 +27,12 @@ const addMatch =  async (req, res) => {
         Array.from({ length: vipCol }, () => false));
 
         match.set('normal_seats', normalSeats)
-        match.set('vip_seats',VIPSeats)
+        match.set('vip_seats', VIPSeats)
 
         await match.save();
-       res.status(201).json({match : match}); 
+        res.status(201).json({match : match});
     }
     catch(error) {
-        if(!error.statusCode) error.statusCode = 400;
         res.status(error.statusCode).send({message: error.message});
     }
 }
@@ -46,8 +45,6 @@ const getMatch = async (req, res) => {
         res.status(200).json({match: match});
     }
     catch(error) {
-        console.log(error.message)
-        if(!error.statusCode) error.statusCode = 400;
         res.status(error.statusCode).send({message: error.message});
     }
 }
@@ -63,7 +60,6 @@ const editMatch = async (req, res) => {
         res.status(200).json({match: updatedMatch}); 
     }
     catch(error) {
-        if(!error.statusCode) error.statusCode = 400;
         res.status(error.statusCode).send({message: error.message})
     }
 }
@@ -77,7 +73,6 @@ const addStadium = async (req, res) => {
         res.status(201).json({stadium: stadium}); 
     }
     catch(error) {
-        if(!error.statusCode) error.statusCode = 400;
         res.status(error.statusCode).send({message: error.message});
     }
 }
@@ -87,17 +82,9 @@ const getSeats = async (req, res) => {
         const match = await Match.findById(req.params.matchID);
         if (!match)
             throw new AppError('No match was found with this id', 400);
-        Match
-            .findOne({_id: req.params.matchID})
-            .populate('reservations')
-            .exec(function(error, match){
-                if (error) 
-                    throw error;
-                res.status(200).json({reservations: match.reservations}); 
-            });
+        res.status(200).json({normalSeats: match.normalSeats, VIPSeats: match.VIPSeats}); 
     }
     catch(error) {
-        if(!error.statusCode) error.statusCode = 400;
         res.status(error.statusCode).send({message: error.message})
     }
 }
