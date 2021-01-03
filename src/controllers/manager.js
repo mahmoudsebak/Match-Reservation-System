@@ -2,11 +2,8 @@ const User = require('../models/User.js')
 const Match = require('../models/Match.js')
 const Stadium = require('../models/Stadium.js')
 const Reservation = require('../models/Reservation.js')
-<<<<<<< HEAD
 const mongoose = require('mongoose')
-=======
 const AppError = require('../app_error')
->>>>>>> cb8b07a04029bf5006306abeda426a8263fc3d5b
 
 const addMatch =  async (req, res) => {
     try {
