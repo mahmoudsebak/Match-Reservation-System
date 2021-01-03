@@ -81,7 +81,7 @@ describe('Admin', ()=> {
             .send({
                 email: "f@yahoo.com",
                 password: "12345"
-            }).expect(400, {
+            }).expect(404, {
                 error: true,
                 message: "Wrong email!"
             });
@@ -92,7 +92,7 @@ describe('Admin', ()=> {
             .send({
                 email: "filo@yahoo.com",
                 password: "12387"
-            }).expect(400, {
+            }).expect(404, {
                 error: true,
                 message: "Wrong password!"
             });

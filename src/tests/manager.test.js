@@ -47,10 +47,21 @@ beforeAll( async() => {
         .send({email: 'mahmoud22@gmail.com', password: '123456789'})
     managerToken = res.body.token
 
+    stadium = {
+        name : "Borg Alarab",
+        VIP_area_rows : "10",
+        VIP_area_seats_per_row: "10",
+        normal_area_rows: "100",
+        seats_per_row : "100"
+    }
+    const stadium1 = new Stadium(stadium)
+    res = await stadium1.save()
+    stadiumID = res._id
+
     match = {
         home_team: "Ahly",
         away_team: "Zamalek",
-        match_venue: new ObjectID(),
+        match_venue: stadiumID,
         date: Date.now(),
         main_referee: "Ahmed",
         line_man1: "Mohamed",
@@ -60,11 +71,6 @@ beforeAll( async() => {
     res = await match1.save()
     matchID = res._id
 
-    stadium = {
-        name : "Borg Alarab",
-        VIP_area_rows : "10",
-        seats_per_row : "100"
-    }
 });
 
 afterAll( async() => {
@@ -88,6 +94,7 @@ describe('Manager', ()=> {
     });
 
     it('Add Stadium from manager account', async ()=> {
+        stadium.name = "Cairo"
         await request.post('/manager/stadium')
         .set('Authorization', managerToken)
         .send(stadium).expect(201)
