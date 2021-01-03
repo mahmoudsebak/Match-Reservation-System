@@ -30,7 +30,7 @@ const addMatch =  async (req, res) => {
         match.set('vip_seats',VIPSeats)
 
         await match.save();
-       res.status(201).json({match : match});
+       res.status(201).json({match : match}); 
     }
     catch(error) {
         if(!error.statusCode) error.statusCode = 400;
