@@ -133,7 +133,7 @@ describe('Admin', ()=> {
             .set('authorization', 'Bearer ' + admin.token)
             .expect(500);
 
-            user.findOneAndUpdate = original;
+            User.findOneAndUpdate = original;
         });
     });
 
