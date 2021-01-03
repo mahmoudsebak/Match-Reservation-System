@@ -13,7 +13,7 @@ const adminSignin = async (req, res) => {
         const token = await admin.generateToken()
         res.status(200).send({error : false, token : token, admin : admin})
     } catch (error) {
-        res.status(400).send({error : true, message : error.message})
+        res.status(404).send({error : true, message : error.message})
     }
 }
 
@@ -22,7 +22,7 @@ const adminApprove = async (req, res) => {
     try {
         const user = await User.findOneAndUpdate({_id : userId}, { $set: { approved: true}})
         if(!user){
-            res.status(404).send({error : true, message : "User Not Found!"})
+            return res.status(404).send({error : true, message : "User Not Found!"})
         }
         res.status(201).send({error : false, user : user})
     } catch (error) {
@@ -56,7 +56,7 @@ const deleteUser = async (req, res) => {
     try {
         const user = await User.findByIdAndDelete(userId)
         if(!user){
-            res.status(404).send({error : true, message : "User Not Found!"})
+            return res.status(404).send({error : true, message : "User Not Found!"})
         }
         res.status(200).send({error : false, user : user})    
     } catch (error) {
