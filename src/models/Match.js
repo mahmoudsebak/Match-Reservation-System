@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Reservation = require('./Reservation')
+const stadiam = require('./Stadium')
 
 const matchSchema = mongoose.Schema({
     home_team : {
@@ -32,6 +33,7 @@ const matchSchema = mongoose.Schema({
         required : true
     }
 },{
+    strict:false,
     timestamps: true,
     toJSON: {virtuals: true}
 })
@@ -47,6 +49,7 @@ matchSchema.pre('remove', async function(next) {
     await Reservation.deleteMany({match : match._id})
     next()
 })
+
 
 const Match = mongoose.model('Match', matchSchema)
 module.exports = Match

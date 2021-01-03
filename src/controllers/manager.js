@@ -2,6 +2,7 @@ const User = require('../models/User.js')
 const Match = require('../models/Match.js')
 const Stadium = require('../models/Stadium.js')
 const Reservation = require('../models/Reservation.js')
+const mongoose = require('mongoose')
 const AppError = require('../app_error')
 
 const addMatch =  async (req, res) => {
@@ -9,8 +10,27 @@ const addMatch =  async (req, res) => {
         if (!req.user.role)
             throw new AppError('User does not have manager credentials', 401);
         const match = new Match(req.body);
+        
+        const stadium = await Stadium.findById(match.match_venue)
+        
+        const normalCol=stadium.seats_per_row
+        const vipCol = stadium.VIP_area_seats_per_row
+        const normalRow=stadium.normal_area_rows
+        const vipRow=stadium.VIP_area_rows
+        
+        const normalSeats =
+        Array.from({ length: normalRow }, () => 
+        Array.from({ length: normalCol }, () => false));
+        
+        const VIPSeats =
+        Array.from({ length: vipRow }, () => 
+        Array.from({ length: vipCol }, () => false));
+
+        match.set('normal_seats', normalSeats)
+        match.set('vip_seats',VIPSeats)
+
         await match.save();
-        res.status(201).json({match: match}); 
+       res.status(201).json({match : match});
     }
     catch(error) {
         res.status(error.statusCode).send({message: error.message});

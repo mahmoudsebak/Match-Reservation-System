@@ -13,6 +13,10 @@ const reservationShema = mongoose.Schema({
         required : true,
         ref : 'Match'
     },
+    is_VIP : {
+        type : Boolean,
+        required : true,
+    },
     seat_row : {
         type : Number,
         required : true
@@ -22,6 +26,7 @@ const reservationShema = mongoose.Schema({
         required : true
     }
 },{
+    strict : false,
     timestamps : true
 })
 

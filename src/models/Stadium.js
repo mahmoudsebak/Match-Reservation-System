@@ -11,6 +11,14 @@ const stadiumSchema = mongoose.Schema({
         type : Number,
         required : true
     },
+    VIP_area_seats_per_row : {
+        type : Number,
+        required : true
+    },
+    normal_area_rows : {
+        type : Number,
+        required : true
+    },
     seats_per_row : {
         type : Number,
         required : true
