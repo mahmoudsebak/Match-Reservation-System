@@ -13,7 +13,6 @@ const addMatch =  async (req, res) => {
         res.status(201).json({match: match}); 
     }
     catch(error) {
-        if(!error.statusCode) error.statusCode = 400;
         res.status(error.statusCode).send({message: error.message});
     }
 }
@@ -26,8 +25,6 @@ const getMatch = async (req, res) => {
         res.status(200).json({match: match});
     }
     catch(error) {
-        console.log(error.message)
-        if(!error.statusCode) error.statusCode = 400;
         res.status(error.statusCode).send({message: error.message});
     }
 }
@@ -43,7 +40,6 @@ const editMatch = async (req, res) => {
         res.status(200).json({match: updatedMatch}); 
     }
     catch(error) {
-        if(!error.statusCode) error.statusCode = 400;
         res.status(error.statusCode).send({message: error.message})
     }
 }
@@ -57,7 +53,6 @@ const addStadium = async (req, res) => {
         res.status(201).json({stadium: stadium}); 
     }
     catch(error) {
-        if(!error.statusCode) error.statusCode = 400;
         res.status(error.statusCode).send({message: error.message});
     }
 }
@@ -71,13 +66,10 @@ const getSeats = async (req, res) => {
             .findOne({_id: req.params.matchID})
             .populate('reservations')
             .exec(function(error, match){
-                if (error) 
-                    throw error;
                 res.status(200).json({reservations: match.reservations}); 
             });
     }
     catch(error) {
-        if(!error.statusCode) error.statusCode = 400;
         res.status(error.statusCode).send({message: error.message})
     }
 }
