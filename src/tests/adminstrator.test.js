@@ -105,7 +105,6 @@ describe('Admin', ()=> {
                 password: "12345678"
             });
             admin.token = res.body.token;
-            console.log(admin.token);
             expect(res.status).toBe(200);
         });
 

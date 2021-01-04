@@ -18,24 +18,16 @@ const editUserData = async (req ,res) =>{
     try{
         updates.forEach((update) => req.user[update] = req.body[update])
         await req.user.save()
-        console.log('Update Complete')
         res.status(200).send(req.user)
     }catch(e){
-        console.log('here at line 23 is ok')
-        console.log(e)
         res.status(400).send(e)
     }
 }
 const getAllMatches = async(req,res)=>{
     try{
     allMatches = await Match.find()
-    if (! allMatches){
-        throw new Error("No Matches found")
-    }
-    console.log("Matches has been found")
     res.status(200).json({matches:allMatches})
     }catch(e){
-        console.log(e)
         res.status(400).send({e :true , message: e.message})
     }
 }
@@ -83,12 +75,10 @@ const bookTicket = async (req, res, next) => {
       
       await session.commitTransaction()
 
-      console.log('Ticket is successfully booked')
       res.status(200).json({Reservation: reservation })
     } 
     catch (e) {
       await session.abortTransaction()
-      console.log(e)
       res.status(400).send({e :true , message: e.message})
     } 
     finally {
@@ -105,7 +95,6 @@ const bookTicket = async (req, res, next) => {
         var days = (a - b) / (60 * 60 * 24 * 1000)
         row = reservation.seat_row
         col = reservation.seat_col
-        console.log(reservation.match)
         if(days<=3){
             var query={}
             var update={}
