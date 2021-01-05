@@ -113,13 +113,16 @@ afterAll( async() => {
     await Reservation.deleteMany({})
 });
 
-describe('User Edit Data Functionality',()=>{
+describe('User Edit Data Functionality', ( )=>{
     it(" User Edit Data with valide parameter",async ()=>{
-        await request.patch("/fans/editdata")
+        return request.patch("/fans/editdata")
         .set("authorization",managerToken)
         .send({
             "gender":"female"
-        }).expect(200)
+        }).then( x => {
+            expect(x.status).toBe(200);
+        });
+
     });
 
     it(" User Edit Data with invalid parameter",async ()=>{
