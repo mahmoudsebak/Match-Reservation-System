@@ -11,7 +11,7 @@ const adminRouter = require('./routers/adminstrator.js')
 
 
 app.use(express.json())
-app.use(cors)
+app.use(cors())
 app.use(fanRouter)
 app.use(managerRouter)
 app.use(guestRouter)
