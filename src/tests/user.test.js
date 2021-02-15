@@ -137,6 +137,3 @@ test('logout unauthorized..', async () => {
     expect(res.body.message).toBe('Not Authorized!')
 })
 
-
-
-
