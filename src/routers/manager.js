@@ -10,5 +10,6 @@ router
   .patch(auth, managerController.editMatch);
 router.post('/manager/stadium', auth, managerController.addStadium);
 router.get('/manager/seats/:matchID', managerController.getSeats);
+router.post('/manager/getAllStadium', managerController.getAllStadium);
 
 module.exports = router
