@@ -2,6 +2,7 @@ const User = require('../models/User.js')
 const Match = require('../models/Match.js')
 const Stadium = require('../models/Stadium.js')
 const Reservation = require('../models/Reservation.js')
+const escapeStringRegexp = require('escape-string-regexp');
 
 const userSignup =  async (req, res) => {
     try {
@@ -43,8 +44,26 @@ const userLogout = async (req, res) => {
     
 }
 
+const getUsers = async (req, res) => {
+    if(!req.query.username){
+        res.status(400).send({error: true})
+    }
+    else {
+        try{
+            const $regex = escapeStringRegexp(req.query.username);
+            const users = await User.find({ username: { $regex } });
+            res.send({ error: false, users: users})
+        } catch(error){
+            res.status(500).send({error: true, message: error.message})
+        }
+    }
+    
+    
+}
+
 module.exports = {
     userSignin,
     userSignup,
-    userLogout
+    userLogout,
+    getUsers
 }
