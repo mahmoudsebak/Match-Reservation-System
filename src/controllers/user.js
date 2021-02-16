@@ -18,6 +18,19 @@ const userSignup =  async (req, res) => {
     }
 }
 
+const checkUser = async (req, res) => {
+    try {
+        const username = req.params.username
+        const result = await User.find({"username": username});
+        if(result)
+            res.status(200).send({error : false, free: false});
+        else
+            res.status(200).send({error : false, free: true});
+    } catch (error) {
+        res.status(404).send({error : true, message : error.message})
+    }
+}
+
 const userSignin = async (req, res) => {
     try {
         const email = req.body.email
@@ -65,5 +78,6 @@ module.exports = {
     userSignin,
     userSignup,
     userLogout,
-    getUsers
+    getUsers,
+    checkUser
 }
