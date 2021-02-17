@@ -76,6 +76,14 @@ const addStadium = async (req, res) => {
         res.status(error.statusCode).send({message: error.message});
     }
 }
+const getAllStadium = async (req, res) => {
+    try {
+        allStadium = await Stadium.find()
+        res.status(200).json({stadium: allStadium})
+    }catch(error) {
+        res.status(error.statusCode).send({message: error.message});
+    }
+}
 
 const getSeats = async (req, res) => {
     try {
@@ -94,5 +102,6 @@ module.exports = {
     getMatch,
     editMatch,
     addStadium,
-    getSeats
+    getSeats,
+    getAllStadium
 }
