@@ -27,7 +27,7 @@ const addMatch =  async (req, res) => {
         Array.from({ length: vipCol }, () => false));
 
         match.set('normal_seats', normalSeats)
-        match.set('vip_seats', VIPSeats)
+        match.set('seats', VIPSeats)
 
         await match.save();
         res.status(201).json({match : match});
