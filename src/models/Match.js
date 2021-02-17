@@ -20,6 +20,10 @@ const matchSchema = mongoose.Schema({
         required : true,
         ref : 'Stadium'
     },
+    stadium : {
+        type : String,
+        required : true 
+    },
     main_referee : {
         type : String,
         required : true
