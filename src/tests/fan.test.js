@@ -11,10 +11,10 @@ jest.setTimeout(20000);
 var userId = null, managerToken = null, matchID = null,reservationId = null, manager = {}, match = {}, stadium = {}, reservation = {};
 beforeAll( async() => {
 
-    await User.deleteMany({})
-    await Match.deleteMany({})
-    await Stadium.deleteMany({})
-    await Reservation.deleteMany({})
+    // await User.deleteMany({})
+    // await Match.deleteMany({})
+    // await Stadium.deleteMany({})
+    // await Reservation.deleteMany({})
 
     manager = {
         username: 'mazen123',
@@ -107,10 +107,10 @@ beforeAll( async() => {
 });
 
 afterAll( async() => {
-    await User.deleteMany({})
-    await Match.deleteMany({})
-    await Stadium.deleteMany({})
-    await Reservation.deleteMany({})
+    // await User.deleteMany({})
+    // await Match.deleteMany({})
+    // await Stadium.deleteMany({})
+    // await Reservation.deleteMany({})
 });
 
 describe('User Edit Data Functionality', ( )=>{

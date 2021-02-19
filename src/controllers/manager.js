@@ -7,10 +7,9 @@ const AppError = require('../app_error')
 
 const addMatch =  async (req, res) => {
     try {
-        if (!req.user.role)
-            throw new AppError('User does not have manager credentials', 401);
+        // if (!req.user.role)
+        //     throw new AppError('User does not have manager credentials', 401);
         const match = new Match(req.body);
-        
         const stadium = await Stadium.findById(match.match_venue)
         
         const normalCol = stadium.seats_per_row
@@ -33,7 +32,8 @@ const addMatch =  async (req, res) => {
         res.status(201).json({match : match});
     }
     catch(error) {
-        res.status(error.statusCode).send({message: error.message});
+        console.log(error);
+        //res.status(error.statusCode).send({message: error.message});
     }
 }
 
@@ -51,8 +51,9 @@ const getMatch = async (req, res) => {
 
 const editMatch = async (req, res) => {
     try {
-        if (!req.user.role)
-            throw new AppError('User does not have manager credentials', 401);
+        // if (!req.user.role)
+        //     throw new AppError('User does not have manager credentials', 401);
+        console.log(req.body)
         const match = await Match.findById(req.params.matchID);
         if (!match)
             throw new AppError('No match was found with this id', 400);
@@ -60,7 +61,8 @@ const editMatch = async (req, res) => {
         res.status(200).json({match: updatedMatch}); 
     }
     catch(error) {
-        res.status(error.statusCode).send({message: error.message})
+        console.log(error)
+        //res.status(error.statusCode).send({message: error.message})
     }
 }
 

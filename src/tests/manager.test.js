@@ -74,9 +74,9 @@ beforeAll( async() => {
 });
 
 afterAll( async() => {
-    await User.deleteMany({})
-    await Match.deleteMany({})
-    await Stadium.deleteMany({})
+    // await User.deleteMany({})
+    // await Match.deleteMany({})
+    // await Stadium.deleteMany({})
 });
 
 describe('Manager', ()=> {
