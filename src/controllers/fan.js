@@ -38,27 +38,16 @@ const bookTicket = async (req, res, next) => {
       const row = req.body.seat_row
       const col = req.body.seat_col
       slot = {}
-      if (req.body.is_VIP == 0){
-        ObjectId = require('mongodb').ObjectId
-        id = new ObjectId(req.body.match);
-        normalSeats= `"normal_seats.${row}.${col}"`.toString().slice(1,-1)
-        var query={}
-        query["_id"]=id
-        query[normalSeats]=false
-        var update={}
-        update[normalSeats]=true
-        slot = await Match.findOneAndUpdate(query, {$set: update},{ useFindAndModify: false })
-      }else{
-        ObjectId = require('mongodb').ObjectId
-        id = new ObjectId(req.body.match);
-        vipSeats= `"vip_seats.${row}.${col}"`.toString().slice(1,-1)
-        var query={}
-        query["_id"]=id
-        query[vipSeats]=false
-        var update={}
-        update[vipSeats]=true
-        slot = await Match.findOneAndUpdate(query, {$set: update}, { useFindAndModify: false })
-      }
+      ObjectId = require('mongodb').ObjectId
+      id = new ObjectId(req.body.match);
+      vipSeats= `"vip_seats.${row}.${col}"`.toString().slice(1,-1)
+      var query={}
+      query["_id"]=id
+      query[vipSeats]=false
+      var update={}
+      update[vipSeats]=true
+      slot = await Match.findOneAndUpdate(query, {$set: update}, { useFindAndModify: false })
+      
       if (!slot) throw new Error('Seat is not available')
 
       const reservation = await new Reservation(req.body)
@@ -85,6 +74,7 @@ const bookTicket = async (req, res, next) => {
       session.endSession()
     }
   }
+  
   const cancelReservation = async (req ,res) =>{
       try{
         ObjectId = require('mongodb').ObjectId
