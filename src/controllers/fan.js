@@ -28,37 +28,44 @@ const getAllMatches = async(req,res)=>{
     allMatches = await Match.find()
     res.status(200).json({matches:allMatches})
     }catch(e){
-        res.status(400).send({e :true , message: e.message})
+        res.status(400).send({error :true , message: e.message})
     }
 }
 const bookTicket = async (req, res, next) => {
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
-      const row = req.body.seat_row
-      const col = req.body.seat_col
-      slot = {}
-      ObjectId = require('mongodb').ObjectId
-      id = new ObjectId(req.body.match);
-      vipSeats= `"vip_seats.${row}.${col}"`.toString().slice(1,-1)
-      var query={}
-      query["_id"]=id
-      query[vipSeats]=false
-      var update={}
-      update[vipSeats]=true
-      slot = await Match.findOneAndUpdate(query, {$set: update}, { useFindAndModify: false })
-      
-      if (!slot) throw new Error('Seat is not available')
+      req.body.seats.forEach( async ticket => {
+        const row = ticket.seat_row
+        const col = ticket.seat_col
+        slot = {}
+        ObjectId = require('mongodb').ObjectId
+        id = new ObjectId(req.body.match);
+        vipSeats= `seats.${row}.${col}`.toString()
+        let query={}
+        query["_id"]=id
+        query[vipSeats]=false
+
+        let update={}
+        update[vipSeats]=true
+        console.log("seat row: "+ row + "seat col: "+ col);
+        console.log("match id= "+ req.body.match)
+        slot = await Match.findOneAndUpdate(query, {$set: update}, { useFindAndModify: false })
+
+        if (!slot) throw new Error('Seat is not available')
+
+      })
 
       const reservation = await new Reservation(req.body)
-      
       const currentDate = new Date();
       const timestamp = currentDate.getTime();
       hashCode = function(s){
         return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);              
       }
 
-      ticketNumber = Math.abs(hashCode(timestamp.toString()+(req.body.owner).toString()))
+      
+
+      ticketNumber = Math.abs(hashCode(timestamp.toString()+(body.req.user.id).toString()))
       reservation.set('ticket_number', ticketNumber)
       await reservation.save()
       
@@ -68,7 +75,7 @@ const bookTicket = async (req, res, next) => {
     } 
     catch (e) {
       await session.abortTransaction()
-      res.status(400).send({e :true , message: e.message})
+      res.status(400).send({error :true , message: e.message})
     } 
     finally {
       session.endSession()
@@ -103,7 +110,7 @@ const bookTicket = async (req, res, next) => {
             res.status(400).send('Cant be canceled')
         }
       }catch(e){
-        res.status(400).send({e :true , message: e.message})
+        res.status(400).send({error :true , message: e.message})
       }
   }
 
