@@ -32,6 +32,7 @@ const getAllMatches = async(req,res)=>{
     }
 }
 const bookTicket = async (req, res, next) => {
+  console.log(req.body);
   const session = await mongoose.startSession()
   const transactionOptions = {
     readPreference: 'primary',
@@ -41,9 +42,9 @@ const bookTicket = async (req, res, next) => {
   try{
     const result= await session.withTransaction(async () => {
         
-      for (i = 0; i < req.body.seat_row.length; i++) {
-          const row = req.body.seat_row[i]
-          const col = req.body.seat_col[i]
+      for (i = 0; i < req.body.seats.length; i++) {
+          const row = req.body.seats[i].seat_row;
+          const col = req.body.seats[i].seat_col;
           slot = {}
           ObjectId = require('mongodb').ObjectId
           id = new ObjectId(req.body.match);
