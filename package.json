@@ -20,6 +20,7 @@
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.8",
+    "run-s": "^0.0.0",
     "validator": "^13.5.2",
     "yargs": "^16.2.0"
   },

@@ -26,7 +26,7 @@ const reservationShema = mongoose.Schema({
     strict : false,
     timestamps : true
 })
-reservationShema.index({match : 1, seat_row : 1, seat_col : 1, is_VIP : 1}, {unique : true})
+reservationShema.index({match : 1, owner : 1}, {unique : true})
 const Reservation = mongoose.model('Reservation', reservationShema)
 Reservation.syncIndexes();
 module.exports = Reservation

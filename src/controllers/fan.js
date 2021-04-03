@@ -32,49 +32,57 @@ const getAllMatches = async(req,res)=>{
     }
 }
 const bookTicket = async (req, res, next) => {
-    const session = await mongoose.startSession()
-    session.startTransaction()
-    try {
-      req.body.seats.forEach( async ticket => {
-        const row = ticket.seat_row
-        const col = ticket.seat_col
-        slot = {}
-        ObjectId = require('mongodb').ObjectId
-        id = new ObjectId(req.body.match);
-        vipSeats= `seats.${row}.${col}`.toString()
-        let query={}
-        query["_id"]=id
-        query[vipSeats]=false
-
-        let update={}
-        update[vipSeats]=true
-        console.log("seat row: "+ row + "seat col: "+ col);
-        console.log("match id= "+ req.body.match)
-        slot = await Match.findOneAndUpdate(query, {$set: update}, { useFindAndModify: false })
-
-        if (!slot) throw new Error('Seat is not available')
-
-      })
-
-      const reservation = await new Reservation(req.body)
-      const currentDate = new Date();
-      const timestamp = currentDate.getTime();
-      hashCode = function(s){
-        return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);              
-      }
-
-      
-
-      ticketNumber = Math.abs(hashCode(timestamp.toString()+(body.req.user.id).toString()))
-      reservation.set('ticket_number', ticketNumber)
-      await reservation.save()
-      
-      await session.commitTransaction()
-
-      res.status(200).json({Reservation: reservation })
-    } 
+  const session = await mongoose.startSession()
+  const transactionOptions = {
+    readPreference: 'primary',
+    readConcern: { level: 'local' },
+    writeConcern: { w: 'majority' }
+};
+  try{
+    const result= await session.withTransaction(async () => {
+        
+      for (i = 0; i < req.body.seat_row.length; i++) {
+          const row = req.body.seat_row[i]
+          const col = req.body.seat_col[i]
+          slot = {}
+          ObjectId = require('mongodb').ObjectId
+          id = new ObjectId(req.body.match);
+          vipSeats= `vip_seats.${row}.${col}`.toString()
+          let query={}
+          query["_id"]=id
+          query[vipSeats]=false
+  
+          let update={}
+          update[vipSeats]=true
+          slot = await Match.findOneAndUpdate(query, {$set: update}, { useFindAndModify: false ,session:session})
+  
+          if (!slot){
+            await session.abortTransaction()
+            throw new Error('Seat is not available')
+          } 
+          
+        }
+  
+        const reservation = await new Reservation(req.body)
+        const currentDate = new Date();
+        const timestamp = currentDate.getTime();
+  
+  
+  
+        hashCode = function(s){
+          return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);              
+        }
+        
+        ticketNumber = Math.abs(hashCode(timestamp.toString()+(req.body.owner).toString()))
+        reservation.set('ticket_number', ticketNumber)
+  
+        await reservation.save()
+        await session.commitTransaction()
+  
+        res.status(200).json({Reservation: reservation })
+      },transactionOptions);
+  }
     catch (e) {
-      await session.abortTransaction()
       res.status(400).send({error :true , message: e.message})
     } 
     finally {
