@@ -57,6 +57,15 @@ const userLogout = async (req, res) => {
     
 }
 
+const getUserData = async(req,res)=>{
+    try{
+    console.log(req.user)
+    res.status(200).json({user: req.user})
+    }catch(e){
+        res.status(400).send({e :true , message: e.message})
+    }
+}
+
 const getUsers = async (req, res) => {
     if(!req.query.username){
         res.status(400).send({error: true})
@@ -78,6 +87,7 @@ module.exports = {
     userSignin,
     userSignup,
     userLogout,
-    getUsers,
-    checkUser
+    checkUser,
+    getUserData,
+    getUsers
 }
