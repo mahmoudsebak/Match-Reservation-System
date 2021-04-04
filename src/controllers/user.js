@@ -56,9 +56,19 @@ const userLogout = async (req, res) => {
     
 }
 
+const getUserData = async(req,res)=>{
+    try{
+    console.log(req.user)
+    res.status(200).json({user: req.user})
+    }catch(e){
+        res.status(400).send({e :true , message: e.message})
+    }
+}
+
 module.exports = {
     userSignin,
     userSignup,
     userLogout,
-    checkUser
+    checkUser,
+    getUserData
 }
