@@ -136,12 +136,16 @@ const bookTicket = async (req, res, next) => {
     }
   }
 
-
+const getReservations = async (req ,res) =>{
+  reservations = await Reservation.find({owner: req.user})
+  return res.status(200).json(reservations);
+}
 
 
 module.exports ={
     editUserData,
     getAllMatches,
     bookTicket,
+    getReservations,
     cancelReservation
 }
