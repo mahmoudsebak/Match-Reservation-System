@@ -2,7 +2,9 @@ const User = require('../models/User.js')
 const Match = require('../models/Match.js')
 const Stadium = require('../models/Stadium.js')
 const Reservation = require('../models/Reservation.js')
+const bcrypt = require('bcrypt')
 const escapeStringRegexp = require('escape-string-regexp');
+
 
 const userSignup =  async (req, res) => {
     try {
@@ -59,8 +61,23 @@ const userLogout = async (req, res) => {
 
 const getUserData = async(req,res)=>{
     try{
-    console.log(req.user)
-    res.status(200).json({user: req.user})
+        res.status(200).json({user: req.user})
+    }catch(e){
+        res.status(400).send({e :true , message: e.message})
+    }
+}
+
+const updateUserData = async(req,res)=>{
+    try{
+        const email = req.body.email;
+        const password = req.body.old_password;
+        await User.findByCredentials(email, password);
+        if(req.body.password != '')
+            req.body.password = await bcrypt.hash(req.body.password, 8);
+        else
+            delete req.body.password;
+        await User.findOneAndUpdate({email: email}, req.body, {new: true});
+        res.status(200).json({user: req.user})
     }catch(e){
         res.status(400).send({e :true , message: e.message})
     }
@@ -89,5 +106,6 @@ module.exports = {
     userLogout,
     checkUser,
     getUserData,
+    updateUserData,
     getUsers
 }
