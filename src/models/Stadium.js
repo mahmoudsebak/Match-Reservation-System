@@ -17,11 +17,11 @@ const stadiumSchema = mongoose.Schema({
     },
     normal_area_rows : {
         type : Number,
-        required : true
+        required : false
     },
     seats_per_row : {
         type : Number,
-        required : true
+        required : false
     }
 })
 

@@ -24,7 +24,7 @@ const adminApprove = async (req, res) => {
         if(!user){
             return res.status(404).send({error : true, message : "User Not Found!"})
         }
-        res.status(201).send({error : false, user : user})
+        res.status(201).send({error : false})
     } catch (error) {
         res.status(500).send({error : true, message : error.message})
     }   
@@ -65,10 +65,22 @@ const deleteUser = async (req, res) => {
      
 }
 
+const getNotApprovedUsers = async (req, res) => {
+    try {
+        const users = await User.find({approved: false})
+        res.send(users)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+    
+    
+}
+
 module.exports = {
     adminSignin,
     adminApprove,
     adminLogout,
     deleteUser,
-    forceAdmin
+    forceAdmin,
+    getNotApprovedUsers
 }
