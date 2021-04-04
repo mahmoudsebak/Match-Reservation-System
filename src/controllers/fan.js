@@ -32,7 +32,7 @@ const getAllMatches = async(req,res)=>{
     }
 }
 const bookTicket = async (req, res, next) => {
-  console.log(req.body);
+  console.log(req.body.seats);
   const session = await mongoose.startSession()
   const transactionOptions = {
     readPreference: 'primary',
@@ -76,6 +76,7 @@ const bookTicket = async (req, res, next) => {
         
         ticketNumber = Math.abs(hashCode(timestamp.toString()+(req.body.owner).toString()))
         reservation.set('ticket_number', ticketNumber)
+        reservation.set('seats', req.body.seats)
   
         await reservation.save()
         await session.commitTransaction()
@@ -92,35 +93,47 @@ const bookTicket = async (req, res, next) => {
   }
   
   const cancelReservation = async (req ,res) =>{
-      try{
+    const session = await mongoose.startSession()
+    const transactionOptions = {
+    readPreference: 'primary',
+    readConcern: { level: 'local' },
+    writeConcern: { w: 'majority' }
+    };
+    try{
+      const result= await session.withTransaction(async () => {
         ObjectId = require('mongodb').ObjectId
-        id = new ObjectId(req.body.reservation_id);
+        id = new ObjectId(req.body._id);
         const reservation = await Reservation.findById(id)
+        if (!reservation) throw new Error("Invalid id");
         var a = new Date()
+        console.log(reservation)
+        console.log(reservation.seats)
         var b = new Date(reservation.createdAt)
         var days = (a - b) / (60 * 60 * 24 * 1000)
-        row = reservation.seat_row
-        col = reservation.seat_col
         if(days<=3){
+          for (i = 0; i < reservation.seats.length; i++) {
+            row = reservation.seats[i].seat_row
+            col = reservation.seats[i].seat_col
             var query={}
             var update={}
             query["_id"]=new ObjectId(reservation.match)
-            if(reservation.is_VIP==0){
-                normalSeats= `"normal_seats.${row}.${col}"`.toString().slice(1,-1)
-                update[normalSeats]=false
-            }else{
-                vipSeats= `"vip_seats.${row}.${col}"`.toString().slice(1,-1)
-                update[vipSeats]=false
-            }
-            slot = await Match.findOneAndUpdate(query, {$set: update}, { useFindAndModify: false })
-            await Reservation.deleteOne({"_id":id})
-            res.status(200).send("Successfully deleted")
+            vipSeats= `vip_seats.${row}.${col}`.toString()
+            update[vipSeats]=false
+            slot = await Match.findOneAndUpdate(query, {$set: update}, { useFindAndModify: false ,session:session})
+          }
+          await Reservation.deleteOne({"_id":id})
+          res.status(200).send("Successfully deleted")
         }else{
+            await session.abortTransaction()
             res.status(400).send('Cant be canceled')
-        }
-      }catch(e){
-        res.status(400).send({error :true , message: e.message})
       }
+    },transactionOptions);
+    }catch(e){
+      res.status(400).send({error :true , message: e.message})
+    }
+    finally{
+      session.endSession()
+    }
   }
 
 
