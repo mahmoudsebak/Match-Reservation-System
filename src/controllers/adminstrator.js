@@ -4,7 +4,6 @@ const Stadium = require('../models/Stadium.js')
 const Reservation = require('../models/Reservation.js')
 const Admin = require('../models/Adminstrator.js')
 
-
 const adminSignin = async (req, res) => {
     try {
         const email = req.body.email
