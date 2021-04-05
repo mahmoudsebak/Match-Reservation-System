@@ -103,15 +103,14 @@ const bookTicket = async (req, res, next) => {
     readConcern: { level: 'local' },
     writeConcern: { w: 'majority' }
     };
+
     try{
       const result= await session.withTransaction(async () => {
         ObjectId = require('mongodb').ObjectId
-        id = new ObjectId(req.body._id);
+        id = new ObjectId(req.body.id);
         const reservation = await Reservation.findById(id)
         if (!reservation) throw new Error("Invalid id");
         var a = new Date()
-        console.log(reservation)
-        console.log(reservation.seats)
         var b = new Date(reservation.createdAt)
         var days = (a - b) / (60 * 60 * 24 * 1000)
         if(days<=3){
