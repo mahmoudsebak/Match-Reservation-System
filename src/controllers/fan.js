@@ -32,7 +32,11 @@ const getAllMatches = async(req,res)=>{
     }
 }
 const bookTicket = async (req, res, next) => {
-  console.log(req.body.seats);
+  let query={};
+  query["tokens.token".toString()]=req.headers.authorization.toString().slice(7);
+  user= await User.find(query)
+  if (!user) throw Error("User not found")
+  owner=JSON.parse(JSON.stringify(user).slice(1,-1))
   const session = await mongoose.startSession()
   const transactionOptions = {
     readPreference: 'primary',
@@ -48,7 +52,7 @@ const bookTicket = async (req, res, next) => {
           slot = {}
           ObjectId = require('mongodb').ObjectId
           id = new ObjectId(req.body.match);
-          vipSeats= `vip_seats.${row}.${col}`.toString()
+          vipSeats= `seats.${row}.${col}`.toString()
           let query={}
           query["_id"]=id
           query[vipSeats]=false
@@ -73,10 +77,10 @@ const bookTicket = async (req, res, next) => {
         hashCode = function(s){
           return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);              
         }
-        
-        ticketNumber = Math.abs(hashCode(timestamp.toString()+(req.body.owner).toString()))
+        ticketNumber = Math.abs(hashCode(timestamp.toString()+(owner._id).toString()))
         reservation.set('ticket_number', ticketNumber)
         reservation.set('seats', req.body.seats)
+        reservation.set('owner',owner._id)
   
         await reservation.save()
         await session.commitTransaction()
