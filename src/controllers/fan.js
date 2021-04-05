@@ -141,8 +141,17 @@ const bookTicket = async (req, res, next) => {
   }
 
 const getReservations = async (req ,res) =>{
+  let match={}
+  let allReservations=[]
   reservations = await Reservation.find({owner: req.user})
-  return res.status(200).json(reservations);
+  for(let i=0;i<reservations.length;i++){
+  match = await Match.findOne({_id:reservations[i].match})
+  temp=JSON.parse(JSON.stringify(reservations[i]))
+  console.log(temp)
+  temp.match=match
+  allReservations.push(temp)
+  }
+  return res.status(200).json(allReservations);
 }
 
 
