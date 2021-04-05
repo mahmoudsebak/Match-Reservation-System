@@ -84,7 +84,7 @@ const bookTicket = async (req, res, next) => {
   
         await reservation.save()
         await session.commitTransaction()
-  
+        global.io.emit("New Reservation",reservation)
         res.status(200).json({Reservation: reservation })
       },transactionOptions);
   }
