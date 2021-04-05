@@ -1,10 +1,10 @@
 const User = require('../models/User.js')
-Match = require('../models/Match.js')
+const Match = require('../models/Match.js')
 const Stadium = require('../models/Stadium.js')
 const Reservation = require('../models/Reservation.js')
 const { update } = require('../models/Reservation.js')
 const mongoose = require('mongoose')
-const { query } = require('express')
+
 
 const editUserData = async (req ,res) =>{
     const updates = Object.keys(req.body)
@@ -32,7 +32,11 @@ const getAllMatches = async(req,res)=>{
     }
 }
 const bookTicket = async (req, res, next) => {
-  console.log(req.body);
+  let query={};
+  query["tokens.token".toString()]=req.headers.authorization.toString().slice(7);
+  user= await User.find(query)
+  if (!user) throw Error("User not found")
+  owner=JSON.parse(JSON.stringify(user).slice(1,-1))
   const session = await mongoose.startSession()
   const transactionOptions = {
     readPreference: 'primary',
@@ -48,7 +52,7 @@ const bookTicket = async (req, res, next) => {
           slot = {}
           ObjectId = require('mongodb').ObjectId
           id = new ObjectId(req.body.match);
-          vipSeats= `vip_seats.${row}.${col}`.toString()
+          vipSeats= `seats.${row}.${col}`.toString()
           let query={}
           query["_id"]=id
           query[vipSeats]=false
@@ -73,9 +77,10 @@ const bookTicket = async (req, res, next) => {
         hashCode = function(s){
           return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);              
         }
-        
-        ticketNumber = Math.abs(hashCode(timestamp.toString()+(req.body.owner).toString()))
+        ticketNumber = Math.abs(hashCode(timestamp.toString()+(owner._id).toString()))
         reservation.set('ticket_number', ticketNumber)
+        reservation.set('seats', req.body.seats)
+        reservation.set('owner',owner._id)
   
         await reservation.save()
         await session.commitTransaction()
@@ -92,35 +97,47 @@ const bookTicket = async (req, res, next) => {
   }
   
   const cancelReservation = async (req ,res) =>{
-      try{
+    const session = await mongoose.startSession()
+    const transactionOptions = {
+    readPreference: 'primary',
+    readConcern: { level: 'local' },
+    writeConcern: { w: 'majority' }
+    };
+    try{
+      const result= await session.withTransaction(async () => {
         ObjectId = require('mongodb').ObjectId
-        id = new ObjectId(req.body.reservation_id);
+        id = new ObjectId(req.body._id);
         const reservation = await Reservation.findById(id)
+        if (!reservation) throw new Error("Invalid id");
         var a = new Date()
+        console.log(reservation)
+        console.log(reservation.seats)
         var b = new Date(reservation.createdAt)
         var days = (a - b) / (60 * 60 * 24 * 1000)
-        row = reservation.seat_row
-        col = reservation.seat_col
         if(days<=3){
+          for (i = 0; i < reservation.seats.length; i++) {
+            row = reservation.seats[i].seat_row
+            col = reservation.seats[i].seat_col
             var query={}
             var update={}
             query["_id"]=new ObjectId(reservation.match)
-            if(reservation.is_VIP==0){
-                normalSeats= `"normal_seats.${row}.${col}"`.toString().slice(1,-1)
-                update[normalSeats]=false
-            }else{
-                vipSeats= `"vip_seats.${row}.${col}"`.toString().slice(1,-1)
-                update[vipSeats]=false
-            }
-            slot = await Match.findOneAndUpdate(query, {$set: update}, { useFindAndModify: false })
-            await Reservation.deleteOne({"_id":id})
-            res.status(200).send("Successfully deleted")
+            vipSeats= `vip_seats.${row}.${col}`.toString()
+            update[vipSeats]=false
+            slot = await Match.findOneAndUpdate(query, {$set: update}, { useFindAndModify: false ,session:session})
+          }
+          await Reservation.deleteOne({"_id":id})
+          res.status(200).send("Successfully deleted")
         }else{
+            await session.abortTransaction()
             res.status(400).send('Cant be canceled')
-        }
-      }catch(e){
-        res.status(400).send({error :true , message: e.message})
       }
+    },transactionOptions);
+    }catch(e){
+      res.status(400).send({error :true , message: e.message})
+    }
+    finally{
+      session.endSession()
+    }
   }
 
 const getReservations = async (req ,res) =>{

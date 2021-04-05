@@ -3,7 +3,7 @@ const router = new express.Router()
 const managerController = require('../controllers/manager')
 const auth = require('../middleware/user_auth')
 
-router.post('/manager/match', managerController.addMatch);/// care hereeee
+router.post('/manager/match',auth ,managerController.addMatch);
 router
   .route('/manager/match/:matchID')
   .get(managerController.getMatch)

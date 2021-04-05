@@ -21,6 +21,10 @@ const reservationShema = mongoose.Schema({
     seat_col : {
         type : Array,
         required : true
+    },
+    seats : {
+        type :Array,
+        required : false
     }
 },{
     strict : false,
