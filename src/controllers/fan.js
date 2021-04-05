@@ -1,10 +1,10 @@
 const User = require('../models/User.js')
-Match = require('../models/Match.js')
+const Match = require('../models/Match.js')
 const Stadium = require('../models/Stadium.js')
 const Reservation = require('../models/Reservation.js')
 const { update } = require('../models/Reservation.js')
 const mongoose = require('mongoose')
-const { query } = require('express')
+
 
 const editUserData = async (req ,res) =>{
     const updates = Object.keys(req.body)
