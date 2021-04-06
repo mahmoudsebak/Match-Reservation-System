@@ -32,18 +32,20 @@ const getAllMatches = async(req,res)=>{
     }
 }
 const bookTicket = async (req, res, next) => {
-  let query={};
-  query["tokens.token".toString()]=req.headers.authorization.toString().slice(7);
-  user= await User.find(query)
-  if (!user) throw Error("User not found")
-  owner=JSON.parse(JSON.stringify(user).slice(1,-1))
-  const session = await mongoose.startSession()
-  const transactionOptions = {
-    readPreference: 'primary',
-    readConcern: { level: 'local' },
-    writeConcern: { w: 'majority' }
+let query={};
+query["tokens.token".toString()]=req.headers.authorization.toString().slice(7);
+user= await User.find(query)
+if (!user) throw Error("User not found")
+owner=JSON.parse(JSON.stringify(user).slice(1,-1))
+const session = await mongoose.startSession()
+const transactionOptions = {
+  readPreference: 'primary',
+  readConcern: { level: 'local' },
+  writeConcern: { w: 'majority' }
 };
   try{
+    if(req.body.seats.length<=0)
+      throw Error("invlid seat number")
     const result= await session.withTransaction(async () => {
         
       for (i = 0; i < req.body.seats.length; i++) {
@@ -120,12 +122,15 @@ const bookTicket = async (req, res, next) => {
             var query={}
             var update={}
             query["_id"]=new ObjectId(reservation.match)
-            vipSeats= `vip_seats.${row}.${col}`.toString()
+            vipSeats= `seats.${row}.${col}`.toString()
             update[vipSeats]=false
+            console.log("before update")
             slot = await Match.findOneAndUpdate(query, {$set: update}, { useFindAndModify: false ,session:session})
+            if(!slot) throw Error("Failed to delete")
+            console.log("after update")
           }
           await Reservation.deleteOne({"_id":id})
-          res.status(200).send("Successfully deleted")
+          res.status(200).send({msg:"Successfully deleted"})
         }else{
             await session.abortTransaction()
             res.status(400).send('Cant be canceled')
@@ -146,7 +151,6 @@ const getReservations = async (req ,res) =>{
   for(let i=0;i<reservations.length;i++){
   match = await Match.findOne({_id:reservations[i].match})
   temp=JSON.parse(JSON.stringify(reservations[i]))
-  console.log(temp)
   temp.match=match
   allReservations.push(temp)
   }
