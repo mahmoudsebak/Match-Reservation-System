@@ -49,6 +49,7 @@ const getMatch = async (req, res) => {
 }
 
 const editMatch = async (req, res) => {
+    console.log(req.body)
     try {
         if (!req.user.role)
             throw new Error('User does not have manager credentials');
